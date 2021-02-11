@@ -51,8 +51,6 @@ class ESPSPI_WiFiManager:
         # Read the settings
         self.esp = esp
         self.debug = debug
-        self.ssid = secrets["ssid"]
-        self.password = secrets.get("password", None)
         self.attempts = attempts
         self._connection_type = connection_type
         requests.set_socket(socket, esp)
@@ -60,19 +58,27 @@ class ESPSPI_WiFiManager:
         self.pixel_status(0)
         self._ap_index = 0
 
+        # Check for WPA2 SSID and password in the secrets dictionary and load if it exists
+        if connection_type == NORMAL:
+            if secrets.get("ssid"):
+                self.ssid = secrets["ssid"]
+            if secrets.get("password"):
+                self.password = secrets.get("password", None)
+
         # Check for WPA2 Enterprise keys in the secrets dictionary and load them if they exist
-        if secrets.get("ent_ssid"):
-            self.ent_ssid = secrets["ent_ssid"]
-        else:
-            self.ent_ssid = secrets["ssid"]
-        if secrets.get("ent_ident"):
-            self.ent_ident = secrets["ent_ident"]
-        else:
-            self.ent_ident = ""
-        if secrets.get("ent_user"):
-            self.ent_user = secrets["ent_user"]
-        if secrets.get("ent_password"):
-            self.ent_password = secrets["ent_password"]
+        if connection_type == ENTERPRISE:
+            if secrets.get("ent_ssid"):
+                self.ent_ssid = secrets["ent_ssid"]
+            else:
+                self.ent_ssid = secrets["ssid"]
+            if secrets.get("ent_ident"):
+                self.ent_ident = secrets["ent_ident"]
+            else:
+                self.ent_ident = ""
+            if secrets.get("ent_user"):
+                self.ent_user = secrets["ent_user"]
+            if secrets.get("ent_password"):
+                self.ent_password = secrets["ent_password"]
 
     # pylint: enable=too-many-arguments
 
